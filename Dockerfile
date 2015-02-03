@@ -32,9 +32,17 @@ ENV HOME /home/dev
 # Link in shared parts of the home directory
 RUN ln -s /var/shared/.ssh
 
+# Install both homeshick and my dotfiles
+COPY .build/homeshick /home/dev/.homesick/repos/homeshick
+COPY .build/denderello-dotfiles /home/dev/.homesick/repos/dotfiles
+RUN echo 'source "$HOME/.homesick/repos/homeshick/homeshick.sh"' > $HOME/.bash_profile
+
 RUN chown -R dev:dev /home/dev/
 
 USER dev
+
+# Dirty trick to link my dotfiles over the 
+RUN /bin/bash -l -c "homeshick link dotfiles --force"
 
 # Start tmux with forced 256 color and unicode mode
 ENTRYPOINT /bin/bash -l -c "tmux -2 -u"
